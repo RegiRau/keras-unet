@@ -126,7 +126,7 @@ def conv2d_block(
     return c
 
 
-def custom_unet(
+def custom_unet23(
     input_shape,
     num_classes=1,
     activation="relu",
@@ -247,15 +247,15 @@ def custom_unet(
     return model
 
 
-def custom_graph_head(input_shape, number_of_nodes = 100):
-    inputs = Input(input_shape)
-    node_positions = Conv2D(2*number_of_nodes, 1, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
-    merge1 = concatenate(inputs,  node_positions, axis = 3)
-
-    conv2 = Conv2D(256, 256, activation='relu', padding='same', kernel_initializer='he_normal')(merge1)
-    conv2 = Conv2D(256, 256, activation='relu', padding='same', kernel_initializer='he_normal')(conv2)
-    conv2 = Conv2D(number_of_nodes, number_of_nodes, activation='sigmoid', padding='same', kernel_initializer='he_normal')(conv2)
-
-    model = Model(input=inputs, output=conv2)
-
-    return model
+# def custom_graph_head(input_shape, number_of_nodes = 100):
+#     inputs = Input(input_shape)
+#     node_positions = Conv2D(2*number_of_nodes, 1, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
+#     merge1 = concatenate(inputs,  node_positions, axis = 3)
+#
+#     conv2 = Conv2D(256, 256, activation='relu', padding='same', kernel_initializer='he_normal')(merge1)
+#     conv2 = Conv2D(256, 256, activation='relu', padding='same', kernel_initializer='he_normal')(conv2)
+#     conv2 = Conv2D(number_of_nodes, number_of_nodes, activation='sigmoid', padding='same', kernel_initializer='he_normal')(conv2)
+#
+#     model = Model(input=inputs, output=conv2)
+#
+#     return model
