@@ -243,5 +243,5 @@ def custom_vnet(
 
     outputs = Conv3D(num_classes, (1, 1, 1), activation=output_activation)(x)
 
-    model = Model(inputs=[inputs], outputs=[outputs])
+    model = Model(inputs= inputs, outputs=[outputs])
     return model

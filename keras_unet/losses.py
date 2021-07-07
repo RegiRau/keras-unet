@@ -6,6 +6,8 @@ else:
 
 
 def jaccard_distance(y_true, y_pred, smooth=100):
+
+
     """Jaccard distance for semantic segmentation.
 
     Also known as the intersection-over-union loss.

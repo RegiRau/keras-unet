@@ -117,13 +117,13 @@ def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, networ
     layer_np2 = tensorflow.expand_dims(layer_np, axis=-1)
 
     merge_adj_1 = concatenate([unet_out, layer_np2], axis=-1)
-    conv_adj1 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge_adj_1)
+    conv_adj1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge_adj_1)
     conv_adj1  = Conv2DTranspose(1, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv_adj1)
     drop_adj1  = Dropout(0.5)(conv_adj1)
-    layer_adj_out = MaxPooling2D(pool_size=(4, 4), name = 'adjacency_matrix')(drop_adj1)
+    layer_adj_out = MaxPooling2D(pool_size=(4, 4))(drop_adj1)
     layer_adj_out = Flatten()(layer_adj_out)
-    layer_adj_out = Dense(100)(layer_adj_out)
-    # layer_adj_out = Reshape((100,100), name = 'adjacency_matrix')(layer_adj_out)
+    layer_adj_out = Dense(50*50)(layer_adj_out)
+    layer_adj_out = Reshape((50,50), name = 'adjacency_matrix')(layer_adj_out)
 
     model = Model(inputs = inputs, outputs = [fullyconnected_node_postions, layer_adj_out])
 
