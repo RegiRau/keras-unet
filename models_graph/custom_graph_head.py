@@ -42,36 +42,35 @@ else:
     )
 
 
-def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, network_size_for_max_nodes = 80, ):
+def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, network_dim = 80, ):
     #= (256, 256, 1)
     inputs = Input(input_size, name = "input_image")
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(inputs)
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
     conv2 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool1)
-    conv2 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv2)
+    #conv2 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv2)
     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
     conv3 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool2)
-    conv3 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv3)
+    #conv3 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv3)
     pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
-    conv4 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool3)
-    conv4 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv4)
+    conv4 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool3)
     drop4 = Dropout(0.5)(conv4)
     pool4 = MaxPooling2D(pool_size=(2, 2))(drop4)
 
     conv5 = Conv2D(1024, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool4)
-    conv5 = Conv2D(1024, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv5)
+    #conv5 = Conv2D(1024, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv5)
     drop5 = Dropout(0.5)(conv5)
 
-    up6 = Conv2D(512, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(drop5))
+    up6 = Conv2D(256, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(drop5))
     merge6 = concatenate([drop4,up6], axis = 3)
-    conv6 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge6)
-    conv6 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv6)
+    conv6 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge6)
+    #conv6 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv6)
 
-    up7 = Conv2D(256, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv6))
+    up7 = Conv2D(128, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv6))
     merge7 = concatenate([conv3,up7], axis = 3)
-    conv7 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge7)
-    conv7 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv7)
+    conv7 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge7)
+    #conv7 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv7)
 
     up8 = Conv2D(128, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv7))
     merge8 = concatenate([conv2,up8], axis = 3)
@@ -80,25 +79,24 @@ def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, networ
 
     up9 = Conv2D(32, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv8))
     merge9 = concatenate([conv1,up9], axis = 3)
-    unet_out = Conv2D(32, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge9)
+    conv9 = Conv2D(32, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge9)
 
-    unet_out_dimensions = unet_out.shape
     #state of the art unet ends
     # shrink to node vector
 
 
-    pool_gh1= MaxPooling2D(pool_size=(5, 5))(unet_out)
-    drop_gh1 = Dropout(0.5)(pool_gh1)
-    conv_gh1 = Conv2D(network_size_for_max_nodes, 3, activation='relu', padding='same', kernel_initializer='he_normal')(drop_gh1)
-    pool_gh2 = MaxPooling2D(pool_size=(4, 4))(conv_gh1)
+    pool_gh1= MaxPooling2D(pool_size=(2, 2))(conv9)
+    unet_out = Dropout(0.5)(pool_gh1)
+    conv_gh1 = Conv2D(4, 3, activation='relu', padding='same', kernel_initializer='he_normal')(unet_out)
+    pool_gh2 = MaxPooling2D(pool_size=(2, 2))(conv_gh1)
 
     #drop_gh3  = Conv2DTranspose(1, 4, output_shape =(unet_out_dimensions[1],unet_out_dimensions[1]) ,activation='relu', padding='same', kernel_initializer='he_normal')(pool_gh2)
 
 
     fullyconnected_node_postions = Flatten()(pool_gh2)
 
-    fullyconnected_node_postions = Dense(unet_out_dimensions[1], name = 'pixel_position_of_nodes')(fullyconnected_node_postions)
-
+    fullyconnected_node_postions = Dense(network_dim*2, name = 'pixel_position_of_nodes')(fullyconnected_node_postions)
+    #unet_out.shape[1]/2=network_dim #how it needs to match
 
     layer_np_1 = fullyconnected_node_postions
 
@@ -106,7 +104,7 @@ def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, networ
     # for i in range(unet_out_dimensions[1]):
     #     layer_np_tmp.append(Dense(unet_out_dimensions[1],activation='relu')(fullyconnected_node_postions))
     layer_np_tmp = []
-    for i in range(unet_out_dimensions[1]):
+    for i in range(unet_out.shape[1]):
         layer_np_tmp.append(layer_np_1)
 
     layer_np = tensorflow.stack(layer_np_tmp, axis=1)
@@ -117,12 +115,14 @@ def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, networ
     layer_np2 = tensorflow.expand_dims(layer_np, axis=-1)
 
     merge_adj_1 = concatenate([unet_out, layer_np2], axis=-1)
-    conv_adj1 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge_adj_1)
+    conv_adj1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge_adj_1)
     conv_adj1  = Conv2DTranspose(1, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv_adj1)
+    #conv_adj1 = Conv2DTranspose(3, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv_adj1)
     drop_adj1  = Dropout(0.5)(conv_adj1)
-    layer_adj_out = MaxPooling2D(pool_size=(4, 4), name = 'adjacency_matrix')(drop_adj1)
+    layer_adj_out = MaxPooling2D(pool_size=(6,6))(drop_adj1)
     layer_adj_out = Flatten()(layer_adj_out)
-    layer_adj_out = Dense(100)(layer_adj_out)
+    adj_flatten_dim = int((network_dim * network_dim - network_dim) / 2)
+    layer_adj_out = Dense(adj_flatten_dim, name = 'adjacency_matrix')(layer_adj_out)
     # layer_adj_out = Reshape((100,100), name = 'adjacency_matrix')(layer_adj_out)
 
     model = Model(inputs = inputs, outputs = [fullyconnected_node_postions, layer_adj_out])

@@ -42,7 +42,7 @@ else:
     )
 
 
-def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, network_size_for_max_nodes = 80, ):
+def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, network_dim = 80, ):
     #= (256, 256, 1)
     inputs = Input(input_size, name = "input_image")
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(inputs)
@@ -89,7 +89,7 @@ def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, networ
 
     pool_gh1= MaxPooling2D(pool_size=(5, 5))(unet_out)
     drop_gh1 = Dropout(0.5)(pool_gh1)
-    conv_gh1 = Conv2D(network_size_for_max_nodes, 3, activation='relu', padding='same', kernel_initializer='he_normal')(drop_gh1)
+    conv_gh1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(drop_gh1)
     pool_gh2 = MaxPooling2D(pool_size=(4, 4))(conv_gh1)
 
     #drop_gh3  = Conv2DTranspose(1, 4, output_shape =(unet_out_dimensions[1],unet_out_dimensions[1]) ,activation='relu', padding='same', kernel_initializer='he_normal')(pool_gh2)
@@ -97,7 +97,7 @@ def custom_adj_unet(input_size= (256, 256, 1), pretrained_weights = None, networ
 
     fullyconnected_node_postions = Flatten()(pool_gh2)
 
-    fullyconnected_node_postions = Dense(unet_out_dimensions[1], name = 'pixel_position_of_nodes')(fullyconnected_node_postions)
+    fullyconnected_node_postions = Dense(network_dim*2, name = 'pixel_position_of_nodes')(fullyconnected_node_postions)
 
 
     layer_np_1 = fullyconnected_node_postions
