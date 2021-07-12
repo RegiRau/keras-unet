@@ -250,7 +250,7 @@ def plot_imgs(
 
 def plot_imgs_regine(image: np.ndarray, label: np.ndarray, index: int):
     img = image[index].copy()
-    #if len(img.shape) == 2:
+    # if len(img.shape) == 2:
     #    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
     adjacency_matrix = np.uint8(label[index][:, 2:, 0])
@@ -258,13 +258,13 @@ def plot_imgs_regine(image: np.ndarray, label: np.ndarray, index: int):
     positions = label[index][:, :2, 0]
     pos_list = []
     for i in range(len(positions)):
-        pos_list.append([positions[i][0], img.shape[0]-positions[i][1]])
+        pos_list.append([positions[i][0], img.shape[0] - positions[i][1]])
     p = dict(enumerate(pos_list, 0))
 
     Graph = nx.from_numpy_matrix(adjacency_matrix)
     nx.set_node_attributes(Graph, p, 'pos')
 
-    y_lim, x_lim = img.shape[:] #[:-1]
+    y_lim, x_lim = img.shape[:]
     extent = 0, x_lim, 0, y_lim
 
     fig = plt.figure(frameon=False, figsize=(20, 20))
