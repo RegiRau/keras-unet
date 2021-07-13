@@ -248,14 +248,12 @@ def plot_imgs(
 
     plt.show()
 
-def plot_imgs_regine(image: np.ndarray, label: np.ndarray, index: int):
-    img = image[index].copy()
-    # if len(img.shape) == 2:
-    #    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-
-    adjacency_matrix = np.uint8(label[index][:, 2:, 0])
-
-    positions = label[index][:, :2, 0]
+def plot_graph_on_img(image: np.ndarray, pos: np.ndarray, adjacency: np.ndarray):
+    img = image.copy()
+    if len(img.shape) == 2:
+       img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    adjacency_matrix = np.uint8(adjacency.copy())
+    positions = pos.copy()
     pos_list = []
     for i in range(len(positions)):
         pos_list.append([positions[i][0], img.shape[0] - positions[i][1]])
@@ -264,20 +262,35 @@ def plot_imgs_regine(image: np.ndarray, label: np.ndarray, index: int):
     Graph = nx.from_numpy_matrix(adjacency_matrix)
     nx.set_node_attributes(Graph, p, 'pos')
 
-    y_lim, x_lim = img.shape[:]
+    y_lim, x_lim = img.shape[:-1]
     extent = 0, x_lim, 0, y_lim
 
     fig = plt.figure(frameon=False, figsize=(20, 20))
     plt.imshow(img, extent=extent, interpolation='nearest')
-    #nodenames = Graph.nodes(data=True)
-    #p = dict(enumerate(pos_list, 0))
-    #nx.draw(Graph, nodenames, p, node_size=20, edge_color='g', width=2, extent=extent, node_color='r',
-    #        interpolation='nearest')
-    nx.draw(Graph, pos=p, node_size=10, edge_color='g', width=2, node_color='r')
+    nx.draw(Graph, pos=p, node_size=50, edge_color='g', width=3, node_color='r')
 
     plt.show()
 
     return fig
+
+
+def plot_nodes_on_img(image: np.ndarray, pos: np.ndarray, node_thick: int):
+    img = image.copy()
+    if len(img.shape) == 2:
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+    positions = pos.astype(int)
+    for i in range(len(positions)):
+        cv2.circle(img, (positions[i][0], positions[i][1]), 0, (255, 0, 0),
+                   node_thick)
+    y_lim, x_lim = img.shape[:-1]
+    extent = 0, x_lim, 0, y_lim
+    fig = plt.figure(frameon=False, figsize=(20, 20))
+    plt.imshow(img, extent=extent, interpolation='nearest')
+
+    plt.show()
+
+    return img
 
 
 def zero_pad_mask(mask, desired_size):
