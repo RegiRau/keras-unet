@@ -276,6 +276,7 @@ def plot_graph_on_img(image: np.ndarray, pos: np.ndarray, adjacency: np.ndarray)
 
 def plot_nodes_on_img(image: np.ndarray, pos: np.ndarray, node_thick: int):
     img = image.copy()
+    print(img)
     if len(img.shape) == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 

@@ -6,7 +6,10 @@ if TF:
     from tensorflow.keras import backend as K
 else:
     from tensorflow.keras import backend as K
+
+
 import tensorflow.keras as keras
+
 
 def loss_node_positions(y_true, y_pred):
 
