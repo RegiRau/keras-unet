@@ -107,4 +107,7 @@ venv.bak/
 .vscode
 
 
+logs/
+
+
 *.h5
